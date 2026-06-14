@@ -1,6 +1,7 @@
-param namespace string = 'firewall-mon-namespace'
-param hubname string = 'firewall-mon-hub'
-param sharedkey string = 'firewall-mon-key'
+@description('Namespace for the Event Hub')
+param namespace string = 'fwmonns${uniqueString(resourceGroup().id, deployment().name)}'
+param hubname string = 'fwmonhub'
+param sharedkey string = 'fwmonkey'
 param location string = resourceGroup().location
 
 resource eventHubNamespace 'Microsoft.EventHub/namespaces@2017-04-01' = {
@@ -13,9 +14,10 @@ resource eventHubNamespace 'Microsoft.EventHub/namespaces@2017-04-01' = {
 }
 
 resource eventhub 'Microsoft.EventHub/namespaces/eventhubs@2017-04-01' = {
-  name: '${eventHubNamespace.name}/${hubname}'
+  parent: eventHubNamespace
+  name: hubname
   properties: {
-    messageRetentionInDays: 7
+    messageRetentionInDays: 1
     partitionCount: 1
   }
 }
@@ -31,3 +33,5 @@ resource firewallMonHub 'Microsoft.EventHub/namespaces/eventhubs/authorizationRu
     ]
   }
 }
+
+

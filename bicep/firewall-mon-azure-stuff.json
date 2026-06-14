@@ -4,22 +4,25 @@
   "metadata": {
     "_generator": {
       "name": "bicep",
-      "version": "0.13.1.58284",
-      "templateHash": "2266015696995589825"
+      "version": "0.36.1.42791",
+      "templateHash": "14141912891136746926"
     }
   },
   "parameters": {
     "namespace": {
       "type": "string",
-      "defaultValue": "firewall-mon-namespace"
+      "defaultValue": "[format('fwmonns{0}', uniqueString(resourceGroup().id, deployment().name))]",
+      "metadata": {
+        "description": "Namespace for the Event Hub"
+      }
     },
     "hubname": {
       "type": "string",
-      "defaultValue": "firewall-mon-hub"
+      "defaultValue": "fwmonhub"
     },
     "sharedkey": {
       "type": "string",
-      "defaultValue": "firewall-mon-key"
+      "defaultValue": "fwmonkey"
     },
     "location": {
       "type": "string",
@@ -42,7 +45,7 @@
       "apiVersion": "2017-04-01",
       "name": "[format('{0}/{1}', parameters('namespace'), parameters('hubname'))]",
       "properties": {
-        "messageRetentionInDays": 7,
+        "messageRetentionInDays": 1,
         "partitionCount": 1
       },
       "dependsOn": [
@@ -59,7 +62,7 @@
         ]
       },
       "dependsOn": [
-        "[resourceId('Microsoft.EventHub/namespaces/eventhubs', split(format('{0}/{1}', parameters('namespace'), parameters('hubname')), '/')[0], split(format('{0}/{1}', parameters('namespace'), parameters('hubname')), '/')[1])]",
+        "[resourceId('Microsoft.EventHub/namespaces/eventhubs', parameters('namespace'), parameters('hubname'))]",
         "[resourceId('Microsoft.EventHub/namespaces', parameters('namespace'))]"
       ]
     }
